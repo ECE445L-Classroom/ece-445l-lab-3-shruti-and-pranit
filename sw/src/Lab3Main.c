@@ -38,6 +38,8 @@
 #include "../inc/tm4c123gh6pm.h"
 #include "../inc/Timer0A.h"
 #include "Lab3.h"
+#include "../src/DAC.h"
+#include "../src/Switch.h"
 // ---------- Prototypes   -------------------------
 void DisableInterrupts(void); // Disable interrupts
 void EnableInterrupts(void);  // Enable interrupts
@@ -45,6 +47,8 @@ void WaitForInterrupt(void);  // low power mode
 int main(void){
   DisableInterrupts();
   PLL_Init(Bus80MHz);    // bus clock at 80 MHz
+	DAC_Init();
+	Switch_Init();
   // write this
   EnableInterrupts();
   while(1){
