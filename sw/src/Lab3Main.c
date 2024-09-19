@@ -40,19 +40,50 @@
 #include "Lab3.h"
 #include "../src/DAC.h"
 #include "../src/Switch.h"
+#include "../inc/SysTick.h"
+#include "../src/Display.h"
+
 // ---------- Prototypes   -------------------------
 void DisableInterrupts(void); // Disable interrupts
 void EnableInterrupts(void);  // Enable interrupts
 void WaitForInterrupt(void);  // low power mode
+
+const uint8_t SineWave[64] = {4,5,6,7,7,7,6,5,4,3,2,1,1,1,2,3};
+uint8_t Index=0;           // Index varies from 0 to 63
+
+void DAC_Task(void) {
+	Index = (Index + 1)&0x3F;
+	DAC_Out(SineWave[Index]);
+}
+
 int main(void){
   DisableInterrupts();
   PLL_Init(Bus80MHz);    // bus clock at 80 MHz
-	DAC_Init();
-	Switch_Init();
-  // write this
+	
+	// test switches
+	Switch_Init(); // initialize switches
+	
+	// test DAC/sound
+	//DAC_Init(); // initialize DAC
+	//Timer0A_Init(DAC_Task, 80000, 1); // DAC out sound
+	
+	// test time
+	SYSCTL_RCGCGPIO_R |= 0x20; // enable PF1 internal LED
+	int delay = SYSCTL_RCGCGPIO_R;
+	GPIO_PORTF_DIR_R |= 0x02;
+  GPIO_PORTF_DEN_R |= 0x02;
+	SysTick_Init(80000); // 1 ms interrupt
+	
+	// test display
+	Display_Init();
+	
   EnableInterrupts();
   while(1){
-      // write this
+    // test display
+		Display_AnalogClock();
+		// test switches
+		
+		
   }
 }
 

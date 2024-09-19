@@ -1,4 +1,4 @@
-// Switch.c
+// Switch.h
 // Runs on LM4F120/TM4C123
 // Provide functions that initialize the Switch Module
 

@@ -33,14 +33,19 @@
 #include <stdint.h>
 #include "../inc/tm4c123gh6pm.h"
 #include "../src/DAC.h"
+#include "../src/Display.h"
+
 #define NVIC_ST_CTRL_COUNT      0x00010000  // Count flag
 #define NVIC_ST_CTRL_CLK_SRC    0x00000004  // Clock Source
 #define NVIC_ST_CTRL_INTEN      0x00000002  // Interrupt enable
 #define NVIC_ST_CTRL_ENABLE     0x00000001  // Counter mode
 #define NVIC_ST_RELOAD_M        0x00FFFFFF  // Counter load value
 
-const uint8_t SineWave[16] = {4,5,6,7,7,7,6,5,4,3,2,1,1,1,2,3};
-uint8_t Index=0;           // Index varies from 0 to 15
+uint8_t hours = 0;
+uint8_t minutes = 0;
+uint8_t seconds = 0;
+uint16_t milliseconds = 0;
+
 
 // Initialize SysTick with busy wait running at bus clock.
 //void SysTick_Init(void){
@@ -60,8 +65,22 @@ void SysTick_Init(uint32_t period){
 }
 
 void SysTick_Handler(void) {
-	Index = (Index + 1)%16;
-	DAC_Out(SineWave[Index]);
+	milliseconds++;
+	if(milliseconds == 1000) {
+		milliseconds = 0;
+		seconds++;
+		uint8_t current_value = (GPIO_PORTF_DATA_R & 0x02);
+		current_value ^= 0x02;
+		*((uint8_t *)(((uint32_t)GPIO_PORTF_DATA_BITS_R) + (0x02 << 2))) = current_value;
+		if(seconds == 60) {
+			seconds = 0;
+			minutes++;
+			if(minutes == 60) {
+				minutes = 0;
+				hours++;
+			}
+		}
+	}
 }
 
 // Time delay using busy wait.

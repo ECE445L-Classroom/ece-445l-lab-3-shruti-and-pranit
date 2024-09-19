@@ -21,6 +21,7 @@ void Switch_Init(void) {
 
 
 uint32_t Switch_In(void) {
+	
 	if((GPIO_PORTC_DATA_R&0x10) == 1) {
 		return 0; // move up
 	}
